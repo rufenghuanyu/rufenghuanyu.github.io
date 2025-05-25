@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的网页快捷入口</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        .card h2 {
+            color: #3498db;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>我的常用网页入口</h1>
+        
+        <div class="grid">
+            <!-- AI项目 -->
+            <div class="card">
+                <a href="https://chat.deepseek.com" target="_blank">
+                    <h2>deepseek ↗</h2>
+                    <p>深度求索公司的AI智能体</p>
+                    <span class="badge">人工AI</span>
+                </a>
+            </div>
+              
+              <!-- 4399 -->
+            <div class="card">
+                <a href="https://4399.com" target="_blank">
+                    <h2>4399小游戏 ↗</h2>
+                    <p>4399小游戏</p>
+                    <span class="badge">4399</span>
+                </a>
+            </div>
+
+            <!-- GitHub 入口 -->
+            <div class="card">
+                <a href="https://github.com/rufenghuanyu" target="_blank">
+                    <h2>GitHub 主页 ↗</h2>
+                    <p>访问我的GitHub仓库，查看所有开源项目和代码</p>
+                    <span class="badge">代码仓库</span>
+                </a>
+            </div>
+
+            <!-- 我的公众号 -->
+            <div class="card">
+                <a href="https://share.weiyun.com/5XvdVaOB" target="_blank">
+                    <h2>我的公众号 ↗</h2>
+                    <p>打开链接后请扫描二维码</p>
+                    <span class="badge">我的微信公众号</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
