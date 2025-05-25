@@ -1,211 +1,112 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的网页快捷入口</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-
-        body {
-            background: #f0f2f5;
-            min-height: 100vh;
-            padding: 2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .logo {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 1rem;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .card a {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            height: 100%;
-        }
-
-        .card h2 {
-            color: #3498db;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
-        }
-
-        .card p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .logo {
-                width: 80px;
-                height: 80px;
-            }
-        }
-    </style>
+    <!-- 引入css样式 -->
+    <link rel="stylesheet" href="./clover.css">
+    <title>clover</title>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <!-- 这里添加您的标题图片 -->
-            <img src="icon.ico" alt="网站Logo" class="logo">
-            <h1>我的常用网页入口</h1>
-            <p class="subtitle">©2025 如风唤雨</p>
+    <!-- 四叶草 -->
+    <div class="box">
+        <!-- 四叶草的单片叶子 -->
+        <div class="clover"></div>
+        <div class="clover"></div>
+        <div class="clover"></div>
+        <div class="clover"></div>
+    </div>
+    <!-- 表单盒子 -->
+    <div class="form-box">
+        <!-- 登录盒子 -->
+        <div class="login-box">
+            <!-- 标题 -->
+            <h1 class="title">
+                Sign in
+            </h1>
+            <!-- 图片盒子 -->
+            <div class="img-box">
+                <!-- 图片 -->
+                <img src="./img/胡桃.jpg" alt="">
+            </div>
+            <!-- 输入框盒子 -->
+            <div class="input-box">
+                <!-- 输入框 -->
+                <input type="text" placeholder="用户名" id="username">
+                <input type="password" placeholder="密码" id="password">
+            </div>
+            <!-- 按钮盒子 -->
+            <div class="btn-box">
+                <button onclick="login()">登录</button>
+                <!-- 绑定点击事件 -->
+                <button onclick="mySlide()">注册</button>
+            </div>
         </div>
-        
-        <div class="grid">
-            <!-- AI项目 -->
-            <div class="card">
-                <a href="https://chat.deepseek.com" target="_blank">
-                    <h2>deepseek ↗</h2>
-                    <p>深度求索公司的AI智能体</p>
-                    <span class="badge">人工AI</span>
-                </a>
+        <!-- 注册盒子 -->
+        <div class="register-box">
+            <!-- 标题 -->
+            <h1 class="title">
+                Sign up
+            </h1>
+            <!-- 图片盒子 -->
+            <div class="img-box">
+                <!-- 图片 -->
+                <img src="./img/可莉.png" alt="">
             </div>
-
-            <!-- seewo -->
-            <div class="card">
-                <a href="https://seewo.com" target="_blank">
-                    <h2>希沃APP下载 ↗</h2>
-                    <p>希沃教学APP下载</p>
-                    <span class="badge">教学</span>
-                </a>
+            <!-- 输入框盒子 -->
+            <div class="input-box">
+                <!-- 输入框 -->
+                <input type="text" placeholder="用户名">
+                <input type="password" placeholder="密码">
+                <input type="password" placeholder="确认密码">
             </div>
-
-             <!-- pcl2 -->
-             <div class="card">
-                <a href="https://www.gy328.com/app/pcl2/" target="_blank">
-                    <h2>PCL2 ↗</h2>
-                    <p>我的世界启动器</p>
-                    <span class="badge">游戏</span>
-                </a>
-            </div>
-
-             <!-- bilibili -->
-            <div class="card">
-                <a href="https://www.bilibili.com/" target="_blank">
-                    <h2>哔哩哔哩 ↗</h2>
-                    <p>哔哩哔哩 (゜-゜)つロ 干杯~-</p>
-                    <span class="badge">视频平台</span>
-                </a>
-            </div>
-              
-              <!-- Wechat -->
-            <div class="card">
-                <a href="https://weixin.qq.com/" target="_blank">
-                    <h2>微信 ↗</h2>
-                    <p>微信，是一种生活方式</p>
-                    <span class="badge">通讯应用</span>
-                </a>
-            </div>
-
-             <!-- QQ -->
-            <div class="card">
-                <a href="https://im.qq.com/index/" target="_blank">
-                    <h2>QQ↗</h2>
-                    <p>QQ-轻松做自己</p>
-                    <span class="badge">通讯应用</span>
-                </a>
-            </div>
-
-            <!-- bing-->
-            <div class="card">
-                <a href="https://cn.bing.com/" target="_blank">
-                    <h2>bing搜索↗</h2>
-                    <p>必应中国版</p>
-                    <span class="badge">搜索引擎</span>
-                </a>
-            </div>
-
-            <!-- GitHub 入口 -->
-            <div class="card">
-                <a href="https://github.com/rufenghuanyu" target="_blank">
-                    <h2>GitHub 主页 ↗</h2>
-                    <p>访问我的GitHub仓库，查看所有开源项目和代码</p>
-                    <span class="badge">代码仓库</span>
-                </a>
-            </div>
-
-            <!-- 我的公众号 -->
-            <div class="card">
-                <a href="https://share.weiyun.com/5XvdVaOB" target="_blank">
-                    <h2>我的公众号 ↗</h2>
-                    <p>打开链接后请扫描二维码</p>
-                    <span class="badge">我的微信公众号</span>
-                </a>
+            <!-- 按钮盒子 -->
+            <div class="btn-box">
+                <button>注册</button>
+                <!-- 绑定点击事件 -->
+                <button onclick="mySlide()">登录</button>
             </div>
         </div>
     </div>
+    <script>
+        // 控制切换状态
+        let flag=true
+        // 切换函数
+        const mySlide = ()=>{
+            // 获取注册盒子和登录盒子的dom元素
+            const register_box=document.querySelector('.register-box')
+            const login_box=document.querySelector('.login-box')
+
+            if(flag){
+                // 注册盒子显示
+                register_box.style.display="block"
+                // 登录盒子隐藏
+                login_box.style.display="none"
+            }else {
+                //注册盒子隐藏
+                register_box.style.display="none"
+                // 登录盒子显示
+                login_box.style.display="block"
+            }
+            // 每次点击都改变状态
+            flag=!flag
+        }
+        
+        // 登录函数
+        function login() {
+            // 获取用户名和密码输入值
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // 这里可以添加验证逻辑
+            if(username&& password) {
+                // 验证通过后跳转到指定网址
+                window.location.href = "https://rufenghuanyu.github.io/index.html"; // 替换为您想要跳转的网址
+            } else {
+                alert("请输入用户名和密码！");
+            }
+        }
+    </script>
 </body>
 </html>
