@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的网页工具箱</title>
     <style>
-        /* 原有样式保持不变 */
         * {
             margin: 0;
             padding: 0;
@@ -31,11 +30,33 @@
             margin-bottom: 2rem;
         }
 
-        /* 新增搜索栏样式 */
-        .search-bar {
-            margin: 20px 0;
-            width: 100%;
+        .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        /* 新增搜索框样式 */
+        .search-container {
+            margin: 20px auto;
             max-width: 600px;
+            width: 90%;
         }
 
         #searchInput {
@@ -45,7 +66,7 @@
             border: 2px solid #3498db;
             border-radius: 25px;
             outline: none;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         #searchInput:focus {
@@ -53,13 +74,80 @@
             box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
         }
 
-        /* 原有其他样式保持不变 */
-        .logo { /* ... */ }
-        h1 { /* ... */ }
-        .subtitle { /* ... */ }
-        .grid { /* ... */ }
-        .card { /* ... */ }
-        /* 其他样式... */
+        .search-count {
+            text-align: center;
+            color: #7f8c8d;
+            margin: 10px 0;
+            font-size: 0.9em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card.hidden {
+            opacity: 0;
+            transform: translateY(10px);
+            height: 0;
+            padding: 0;
+            margin: 0;
+            border: 0;
+        }
+
+        .card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+
+        .card h2 {
+            color: #3498db;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -71,15 +159,16 @@
         </div>
 
         <!-- 新增搜索栏 -->
-        <div class="search-bar">
+        <div class="search-container">
             <input type="text" 
                    id="searchInput" 
-                   placeholder="搜索工具（支持名称/拼音首字母）"
+                   placeholder="搜索工具（支持中文/拼音首字母）"
                    autocomplete="off">
+            <div id="searchCount" class="search-count"></div>
         </div>
 
         <div class="grid">
-            <!-- 原有卡片内容保持不变 -->
+                       <!-- AI项目 -->
             <div class="card">
                 <a href="https://chat.deepseek.com" target="_blank">
                     <h2>deepseek ↗</h2>
@@ -87,22 +176,150 @@
                     <span class="badge">人工AI</span>
                 </a>
             </div>
-            
-            <!-- 其他卡片保持不变... -->
+
+              <!-- Chrome -->
+            <div class="card">
+                <a href="https://wwqo.lanzouo.com/i941Q2x6k3rc" target="_blank">
+                    <h2>Chrome浏览器下载 ↗</h2>
+                    <p>Google公司的桌面浏览器 密码:32dn</p>
+                    <span class="badge">浏览器</span>
+                </a>
+            </div
+
+             <!-- 天气 -->
+            <div class="card">
+                <a href="https://weather.cma.cn/" target="_blank">
+                    <h2>中国气象局 ↗</h2>
+                    <p>中国气象局-天气预报</p>
+                    <span class="badge">天气</span>
+                </a>
+            </div>
+
+            <!-- CCTV -->
+            <div class="card">
+                <a href="https://www.cctv.com/" target="_blank">
+                    <h2>CCTV ↗</h2>
+                    <p>中国中央电视台</p>
+                    <span class="badge">央视网</span>
+                </a>
+            </div>
+
+            <!-- tencentvideo -->
+            <div class="card">
+                <a href="https://v.qq.com/" target="_blank">
+                    <h2>腾讯视频 ↗</h2>
+                    <p>电视剧频道-好看电视剧大全-热门电视剧排行榜-腾讯视频</p>
+                    <span class="badge">视频平台</span>
+                </a>
+            </div>
+
+             <!-- music -->
+            <div class="card">
+                <a href="https://www.kugou.com/" target="_blank">
+                    <h2>酷狗音乐 ↗</h2>
+                    <p>酷狗音乐，就是歌多！</p>
+                    <span class="badge">音乐平台</span>
+                </a>
+            </div>
+
+            <!-- seewo -->
+            <div class="card">
+                <a href="https://seewo.com" target="_blank">
+                    <h2>希沃APP下载 ↗</h2>
+                    <p>希沃教学APP下载</p>
+                    <span class="badge">教学</span>
+                </a>
+            </div>
+
+             <!--vidhub -->
+            <div class="card">
+                <a href="https://vidhub.tv/" target="_blank">
+                    <h2>视频库 ↗</h2>
+                    <p>免费观看哪吒2等电影</p>
+                    <span class="badge">视频平台</span>
+                </a>
+            </div>
+
+             <!-- pcl2 -->
+             <div class="card">
+                <a href="https://www.gy328.com/app/pcl2/" target="_blank">
+                    <h2>PCL2 ↗</h2>
+                    <p>我的世界启动器</p>
+                    <span class="badge">游戏</span>
+                </a>
+            </div>
+
+             <!-- bilibili -->
+            <div class="card">
+                <a href="https://www.bilibili.com/" target="_blank">
+                    <h2>哔哩哔哩 ↗</h2>
+                    <p>哔哩哔哩 (゜-゜)つロ 干杯~-</p>
+                    <span class="badge">视频平台</span>
+                </a>
+            </div>
+              
+              <!-- Wechat -->
+            <div class="card">
+                <a href="https://weixin.qq.com/" target="_blank">
+                    <h2>微信 ↗</h2>
+                    <p>微信，是一种生活方式</p>
+                    <span class="badge">通讯应用</span>
+                </a>
+            </div>
+
+             <!-- QQ -->
+            <div class="card">
+                <a href="https://im.qq.com/index/" target="_blank">
+                    <h2>QQ↗</h2>
+                    <p>QQ-轻松做自己</p>
+                    <span class="badge">通讯应用</span>
+                </a>
+            </div>
+
+            <!-- bing-->
+            <div class="card">
+                <a href="https://cn.bing.com/" target="_blank">
+                    <h2>bing搜索↗</h2>
+                    <p>必应中国版</p>
+                    <span class="badge">搜索引擎</span>
+                </a>
+            </div>
+
+            <!-- GitHub 入口 -->
+            <div class="card">
+                <a href="https://github.com/rufenghuanyu" target="_blank">
+                    <h2>GitHub 主页 ↗</h2>
+                    <p>访问我的GitHub仓库，查看所有开源项目和代码</p>
+                    <span class="badge">代码仓库</span>
+                </a>
+            </div>
+
+            <!-- 我的公众号 -->
+            <div class="card">
+                <a href="https://share.weiyun.com/5XvdVaOB" target="_blank">
+                    <h2>我的公众号 ↗</h2>
+                    <p>打开链接后请扫描二维码</p>
+                    <span class="badge">我的微信公众号</span>
+                </a>
+            </div>
+
+
         </div>
     </div>
 
     <script>
-        // 新增搜索功能
+        // 搜索功能实现
         const searchInput = document.getElementById('searchInput');
         const cards = document.querySelectorAll('.card');
+        const searchCount = document.getElementById('searchCount');
 
-        // 拼音首字母映射表
+        // 拼音首字母映射表（示例）
         const pinyinMap = {
+            '深': 's', '度': 'd', '求': 'q', '索': 's',
+            '中': 'z', '国': 'g', '气': 'q', '象': 'x',
             '微': 'w', '信': 'x', '哔': 'b', '哩': 'l',
             '腾': 't', '讯': 'x', '视': 's', '频': 'p',
             '酷': 'k', '狗': 'g', '音': 'y', '乐': 'y',
-            ''
         };
 
         function convertToPinyin(text) {
@@ -111,27 +328,37 @@
             ).join('');
         }
 
-        function filterCards() {
+        function performSearch() {
             const searchTerm = searchInput.value.trim().toLowerCase();
-            
+            let visibleCount = 0;
+
             cards.forEach(card => {
                 const text = card.textContent.toLowerCase();
-                const pinyin = convertToPinyin(text);
-                const isVisible = text.includes(searchTerm) || 
-                                pinyin.includes(searchTerm);
-                
-                card.style.display = isVisible ? 'block' : 'none';
-                card.style.opacity = isVisible ? '1' : '0';
-                card.style.transform = isVisible ? 'translateY(0)' : 'translateY(10px)';
+                const pinyinText = convertToPinyin(text);
+                const isMatch = text.includes(searchTerm) || 
+                              pinyinText.includes(searchTerm);
+
+                if (isMatch) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
             });
+
+            searchCount.textContent = `找到 ${visibleCount} 个匹配结果`;
+            searchCount.style.display = searchTerm ? 'block' : 'none';
         }
 
-        // 添加防抖处理
+        // 防抖处理（300ms）
         let timeout;
         searchInput.addEventListener('input', () => {
             clearTimeout(timeout);
-            timeout = setTimeout(filterCards, 300);
+            timeout = setTimeout(performSearch, 300);
         });
+
+        // 初始执行一次显示所有卡片
+        performSearch();
     </script>
 </body>
 </html>
