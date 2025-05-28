@@ -1,17 +1,29 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="zh-CN"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang="zh-CN"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="zh-CN"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="zh-CN"> <!--<![endif]-->
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的网页工具箱</title>
     <style>
+        /* 重置样式 - 兼容IE */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
+        /* IE10+ 支持 */
+        @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+            * {
+                font-family: Tahoma, Geneva, sans-serif;
+            }
+        }
+        
         body {
             background: #f0f2f5;
             min-height: 100vh;
@@ -52,11 +64,12 @@
             text-align: center;
         }
 
-        /* 新增搜索框样式 */
+        /* 搜索框样式 */
         .search-container {
             margin: 20px auto;
             max-width: 600px;
             width: 90%;
+            position: relative;
         }
 
         #searchInput {
@@ -66,7 +79,7 @@
             border: 2px solid #3498db;
             border-radius: 25px;
             outline: none;
-            transition: all 0.3s ease;
+            background: white;
         }
 
         #searchInput:focus {
@@ -81,10 +94,43 @@
             font-size: 0.9em;
         }
 
+        /* 网格布局 - 使用浮动作为IE的备用方案 */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
+        }
+        
+        /* 为IE10-11提供网格支持 */
+        @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+            .grid {
+                display: -ms-grid;
+                -ms-grid-columns: 1fr 1fr 1fr; /* 三列布局 */
+                gap: 1.5rem;
+            }
+            
+            .card {
+                -ms-grid-column: 1;
+                -ms-grid-row: auto;
+                margin-bottom: 1.5rem;
+            }
+        }
+        
+        /* IE9及以下使用浮动布局 */
+        .lt-ie10 .grid {
+            display: block;
+            overflow: hidden;
+        }
+        
+        .lt-ie10 .card {
+            float: left;
+            width: 32%;
+            margin-right: 2%;
+            margin-bottom: 1.5rem;
+        }
+        
+        .lt-ie10 .card:nth-child(3n) {
+            margin-right: 0;
         }
 
         .card {
@@ -95,6 +141,11 @@
             transition: all 0.3s ease;
             opacity: 1;
             transform: translateY(0);
+        }
+        
+        /* IE9不支持transform，因此移除 */
+        .lt-ie10 .card.hidden {
+            display: none;
         }
 
         .card.hidden {
@@ -147,10 +198,46 @@
                 width: 80px;
                 height: 80px;
             }
+            
+            /* 移动端适配 */
+            .lt-ie10 .card {
+                width: 48%;
+                margin-right: 4%;
+            }
+            
+            .lt-ie10 .card:nth-child(2n) {
+                margin-right: 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .lt-ie10 .card {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+        
+        /* IE警告提示 */
+        .ie-warning {
+            background-color: #ffdddd;
+            border: 1px solid #ff9999;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .lt-ie11 .ie-warning {
+            display: block;
         }
     </style>
 </head>
 <body>
+    <div class="ie-warning">
+        <p>您正在使用旧版Internet Explorer浏览器。部分功能可能无法正常工作，建议升级到现代浏览器如Microsoft Edge、Chrome或Firefox。</p>
+    </div>
+    
     <div class="container">
         <div class="header">
             <img src="icon.ico" alt="网站Logo" class="logo">
@@ -158,7 +245,7 @@
             <p class="subtitle">©2025 如风唤雨</p>
         </div>
 
-        <!-- 新增搜索栏 -->
+        <!-- 搜索栏 -->
         <div class="search-container">
             <input type="text" 
                    id="searchInput" 
@@ -168,7 +255,7 @@
         </div>
 
         <div class="grid">
-             <!-- AI项目 -->
+            <!-- AI项目 -->
             <div class="card">
                 <a href="https://chat.deepseek.com" target="_blank">
                     <h2>deepseek ↗</h2>
@@ -177,34 +264,16 @@
                 </a>
             </div>
 
-             <!-- msdn -->
-            <div class="card">
-                <a href="https://next.itellyou.cn/" target="_blank">
-                    <h2>MSDN ↗</h2>
-                    <p>系统镜像下载</p>
-                    <span class="badge">系统</span>
-                </a>
-            </div>
-
-             <!-- 360 -->
-            <div class="card">
-                <a href="https://www.360.cn/" target="_blank">
-                    <h2>360安全卫士 ↗</h2>
-                    <p>奇虎公司推出的电脑杀毒软件</p>
-                    <span class="badge">杀毒</span>
-                </a>
-            </div>
-
-              <!-- Chrome -->
+            <!-- Chrome -->
             <div class="card">
                 <a href="https://wwqo.lanzouo.com/i941Q2x6k3rc" target="_blank">
                     <h2>Chrome浏览器下载 ↗</h2>
                     <p>Google公司的桌面浏览器 密码:32dn</p>
                     <span class="badge">浏览器</span>
                 </a>
-            </div
+            </div>
 
-             <!-- 天气 -->
+            <!-- 天气 -->
             <div class="card">
                 <a href="https://weather.cma.cn/" target="_blank">
                     <h2>中国气象局 ↗</h2>
@@ -320,41 +389,73 @@
                     <span class="badge">我的微信公众号</span>
                 </a>
             </div>
-
-
         </div>
     </div>
 
+    <!--[if lt IE 9]>
+    <script src="https://cdn.jsdelivr.net/npm/es5-shim@4.5.15/es5-shim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/classlist-polyfill@1.2.0/classList.min.js"></script>
+    <![endif]-->
+    
     <script>
-        // 搜索功能实现
-        const searchInput = document.getElementById('searchInput');
-        const cards = document.querySelectorAll('.card');
-        const searchCount = document.getElementById('searchCount');
+        // 浏览器检测
+        var isIE = false;
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf('MSIE ');
+        var trident = ua.indexOf('Trident/');
+        
+        if (msie > 0 || trident > 0) {
+            isIE = true;
+            document.documentElement.className += ' lt-ie11';
+            if (msie > 0) {
+                // IE10或以下
+                document.documentElement.className += ' lt-ie10';
+                if (parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10) <= 9) {
+                    document.documentElement.className += ' lt-ie9';
+                }
+            }
+        }
+        
+        // 搜索功能实现 - 兼容IE
+        var searchInput = document.getElementById('searchInput');
+        var cards = document.querySelectorAll('.card');
+        var searchCount = document.getElementById('searchCount');
 
-        // 拼音首字母映射表（示例）
-        const pinyinMap = {
+        // 拼音首字母映射表
+        var pinyinMap = {
             '深': 's', '度': 'd', '求': 'q', '索': 's',
             '中': 'z', '国': 'g', '气': 'q', '象': 'x',
             '微': 'w', '信': 'x', '哔': 'b', '哩': 'l',
             '腾': 't', '讯': 'x', '视': 's', '频': 'p',
             '酷': 'k', '狗': 'g', '音': 'y', '乐': 'y',
+            '谷': 'g', '歌': 'g', '浏': 'l', '览': 'l',
+            '天': 't', '预': 'y', '中': 'z', '央': 'y',
+            '腾': 't', '视': 's', '酷': 'k', '狗': 'g',
+            '希': 'x', '沃': 'w', '视': 's', '频': 'p',
+            '游': 'y', '戏': 'x', '哔': 'b', '哩': 'l',
+            '微': 'w', 'Q': 'q', '搜': 's', '引': 'y',
+            '代': 'd', '码': 'm', '公': 'g', '众': 'z'
         };
 
         function convertToPinyin(text) {
-            return [...text].map(char => 
-                pinyinMap[char] || char.toLowerCase()
-            ).join('');
+            var result = '';
+            for (var i = 0; i < text.length; i++) {
+                var char = text.charAt(i);
+                result += pinyinMap[char] || char.toLowerCase();
+            }
+            return result;
         }
 
         function performSearch() {
-            const searchTerm = searchInput.value.trim().toLowerCase();
-            let visibleCount = 0;
+            var searchTerm = searchInput.value.trim().toLowerCase();
+            var visibleCount = 0;
 
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                const pinyinText = convertToPinyin(text);
-                const isMatch = text.includes(searchTerm) || 
-                              pinyinText.includes(searchTerm);
+            for (var i = 0; i < cards.length; i++) {
+                var card = cards[i];
+                var text = card.textContent.toLowerCase();
+                var pinyinText = convertToPinyin(text);
+                var isMatch = text.indexOf(searchTerm) !== -1 || 
+                              pinyinText.indexOf(searchTerm) !== -1;
 
                 if (isMatch) {
                     card.classList.remove('hidden');
@@ -362,18 +463,26 @@
                 } else {
                     card.classList.add('hidden');
                 }
-            });
+            }
 
-            searchCount.textContent = `找到 ${visibleCount} 个匹配结果`;
+            searchCount.textContent = '找到 ' + visibleCount + ' 个匹配结果';
             searchCount.style.display = searchTerm ? 'block' : 'none';
         }
 
-        // 防抖处理（300ms）
-        let timeout;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(performSearch, 300);
-        });
+        // 防抖处理 - 兼容IE
+        var timeout;
+        if (searchInput.addEventListener) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(performSearch, 300);
+            });
+        } else {
+            // 对于IE8及以下
+            searchInput.attachEvent('onpropertychange', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(performSearch, 300);
+            });
+        }
 
         // 初始执行一次显示所有卡片
         performSearch();
