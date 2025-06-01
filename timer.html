@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倒计时计时器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .timer-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .time-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            text-align: center;
+        }
+        
+        .input-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .input-group input {
+            width: 80px;
+            height: 60px;
+            font-size: 1.8rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: #fff;
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .timer-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .time-unit {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px 15px;
+            min-width: 100px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        
+        .time-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .time-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+        
+        .colon {
+            font-size: 3rem;
+            color: white;
+            align-self: center;
+            margin: 0 5px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .btn i {
+            font-size: 1.2rem;
+        }
+        
+        .btn-start {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+        }
+        
+        .btn-pause {
+            background: linear-gradient(to right, #ff8c00, #ffaa00);
+            color: white;
+        }
+        
+        .btn-reset {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-150%);
+            background: white;
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.5s ease-in-out;
+            z-index: 100;
+        }
+        
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .alarm-info {
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 500px) {
+            .timer-card {
+                padding: 30px 20px;
+            }
+            
+            .time-inputs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .timer-display {
+                gap: 5px;
+            }
+            
+            .time-unit {
+                min-width: 80px;
+                padding: 15px 10px;
+            }
+            
+            .time-value {
+                font-size: 2.5rem;
+            }
+            
+            .colon {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="timer-card">
+            <h1><i class="fas fa-clock"></i> 倒计时计时器</h1>
+            <p class="subtitle">设置时间并开始倒计时</p>
+            
+            <div class="time-inputs">
+                <div class="input-group">
+                    <label for="hours">小时</label>
+                    <input type="number" id="hours" min="0" max="99" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="minutes">分钟</label>
+                    <input type="number" id="minutes" min="0" max="59" value="0">
+                </div>
+                <div class="input-group">
+                    <label for="seconds">秒钟</label>
+                    <input type="number" id="seconds" min="0" max="59" value="10">
+                </div>
+            </div>
+            
+            <div class="timer-display">
+                <div class="time-unit">
+                    <div class="time-value" id="displayHours">00</div>
+                    <div class="time-label">小时</div>
+                </div>
+                <div class="colon">:</div>
+                <div class="time-unit">
+                    <div class="time-value" id="displayMinutes">00</div>
+                    <div class="time-label">分钟</div>
+                </div>
+                <div class="colon">:</div>
+                <div class="time-unit">
+                    <div class="time-value" id="displaySeconds">00</div>
+                    <div class="time-label">秒钟</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-start" id="startBtn">
+                    <i class="fas fa-play"></i> 开始
+                </button>
+                <button class="btn btn-pause" id="pauseBtn" disabled>
+                    <i class="fas fa-pause"></i> 暂停
+                </button>
+                <button class="btn btn-reset" id="resetBtn">
+                    <i class="fas fa-redo"></i> 重置
+                </button>
+            </div>
+            
+            <p class="alarm-info">计时结束后将播放提示音</p>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <i class="fas fa-bell"></i> 时间到！
+    </div>
+    
+    <audio id="alarmSound">
+        <source src="ring.mp3" type="audio/mpeg">
+        您的浏览器不支持音频元素。
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const hoursInput = document.getElementById('hours');
+            const minutesInput = document.getElementById('minutes');
+            const secondsInput = document.getElementById('seconds');
+            const displayHours = document.getElementById('displayHours');
+            const displayMinutes = document.getElementById('displayMinutes');
+            const displaySeconds = document.getElementById('displaySeconds');
+            const startBtn = document.getElementById('startBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const notification = document.getElementById('notification');
+            const alarmSound = document.getElementById('alarmSound');
+            
+            let timer;
+            let totalSeconds = 0;
+            let isRunning = false;
+            let remainingTime = 0;
+            
+            // 初始化显示
+            updateDisplay();
+            
+            // 开始按钮事件
+            startBtn.addEventListener('click', function() {
+                if (!isRunning) {
+                    if (remainingTime === 0) {
+                        // 从输入中获取时间
+                        const hours = parseInt(hoursInput.value) || 0;
+                        const minutes = parseInt(minutesInput.value) || 0;
+                        const seconds = parseInt(secondsInput.value) || 0;
+                        
+                        totalSeconds = hours * 3600 + minutes * 60 + seconds;
+                    } else {
+                        totalSeconds = remainingTime;
+                    }
+                    
+                    if (totalSeconds > 0) {
+                        startTimer();
+                        startBtn.disabled = true;
+                        pauseBtn.disabled = false;
+                        isRunning = true;
+                        startBtn.innerHTML = '<i class="fas fa-play"></i> 继续';
+                    }
+                }
+            });
+            
+            // 暂停按钮事件
+            pauseBtn.addEventListener('click', function() {
+                if (isRunning) {
+                    clearInterval(timer);
+                    isRunning = false;
+                    pauseBtn.disabled = true;
+                    startBtn.disabled = false;
+                }
+            });
+            
+            // 重置按钮事件
+            resetBtn.addEventListener('click', function() {
+                clearInterval(timer);
+                isRunning = false;
+                totalSeconds = 0;
+                remainingTime = 0;
+                updateDisplay();
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                startBtn.innerHTML = '<i class="fas fa-play"></i> 开始';
+            });
+            
+            // 启动计时器
+            function startTimer() {
+                clearInterval(timer);
+                
+                timer = setInterval(function() {
+                    if (totalSeconds <= 0) {
+                        clearInterval(timer);
+                        isRunning = false;
+                        showNotification();
+                        alarmSound.play();
+                        startBtn.disabled = false;
+                        pauseBtn.disabled = true;
+                    } else {
+                        totalSeconds--;
+                        remainingTime = totalSeconds;
+                        updateDisplay();
+                    }
+                }, 1000);
+            }
+            
+            // 更新显示
+            function updateDisplay() {
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                
+                displayHours.textContent = hours.toString().padStart(2, '0');
+                displayMinutes.textContent = minutes.toString().padStart(2, '0');
+                displaySeconds.textContent = seconds.toString().padStart(2, '0');
+            }
+            
+            // 显示通知
+            function showNotification() {
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // 输入验证
+            [hoursInput, minutesInput, secondsInput].forEach(input => {
+                input.addEventListener('input', function() {
+                    let value = parseInt(this.value) || 0;
+                    
+                    if (this === hoursInput) {
+                        if (value > 99) this.value = 99;
+                        if (value < 0) this.value = 0;
+                    } else {
+                        if (value > 59) this.value = 59;
+                        if (value < 0) this.value = 0;
+                    }
+                    
+                    // 重置剩余时间
+                    remainingTime = 0;
+                });
+            });
+        });
+    </script>
+</body>
+</html>
