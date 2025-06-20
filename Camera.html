@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网页相机应用</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(25, 25, 50, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        header {
+            text-align: center;
+            padding: 25px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            color: #a0aec0;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+        
+        .camera-container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+            gap: 30px;
+        }
+        
+        .preview-section {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .camera-header {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .camera-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .camera-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #48bb78;
+        }
+        
+        .video-container {
+            position: relative;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+        
+        #video {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border-radius: 10px;
+            background: #000;
+            transform: scaleX(-1);
+            display: none;
+        }
+        
+        .placeholder {
+            width: 100%;
+            max-width: 640px;
+            aspect-ratio: 4/3;
+            background: linear-gradient(45deg, #1a202c, #2d3748);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #718096;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .placeholder::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: rotate(45deg) translate(-10%, -10%); }
+            100% { transform: rotate(45deg) translate(10%, 10%); }
+        }
+        
+        .camera-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+        
+        .controls-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .controls {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .controls h2 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #63b3ed;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #00dbde, #fc00ff);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(90deg, #0ba360, #3cba92);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+            color: #333;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn i {
+            font-size: 1.2rem;
+        }
+        
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .filter-btn {
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .filter-btn.active {
+            border-color: #00dbde;
+            background: rgba(0, 219, 222, 0.2);
+        }
+        
+        .gallery-section {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .photo-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            background: #2d3748;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .photo-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: space-around;
+            padding: 5px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .photo-item:hover .photo-actions {
+            transform: translateY(0);
+        }
+        
+        .action-btn {
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 5px;
+        }
+        
+        .action-btn:hover {
+            color: #00dbde;
+        }
+        
+        .canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+        
+        #canvas {
+            display: none;
+        }
+        
+        .fullscreen-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .fullscreen-img {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+        
+        .fullscreen-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .close-preview {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .close-preview:hover {
+            background: rgba(255, 0, 0, 0.5);
+            transform: rotate(90deg);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #718096;
+            font-size: 0.95rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #2f855a;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .camera-container {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .btn {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-camera"></i> 网页相机应用</h1>
+            <p class="subtitle">在浏览器中直接拍照、应用滤镜并保存您的照片</p>
+            <div class="security-badge">
+                <i class="fas fa-lock"></i> 安全连接 | 本地处理
+            </div>
+        </header>
+        
+        <div class="camera-container">
+            <div class="preview-section">
+                <div class="camera-header">
+                    <div class="camera-title">
+                        <i class="fas fa-video"></i> 实时预览
+                    </div>
+                    <div class="camera-status">
+                        <i class="fas fa-circle"></i> <span>就绪</span>
+                    </div>
+                </div>
+                <div class="video-container">
+                    <video id="video" autoplay playsinline></video>
+                    <div class="placeholder" id="placeholder">
+                        <i class="fas fa-camera camera-icon"></i>
+                        <p>点击启动相机按钮开始</p>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <div class="controls">
+                    <h2><i class="fas fa-sliders-h"></i> 相机控制</h2>
+                    <div class="buttons">
+                        <button class="btn btn-primary" id="start-camera">
+                            <i class="fas fa-play"></i> 启动相机
+                        </button>
+                        <button class="btn btn-secondary" id="capture-btn" disabled>
+                            <i class="fas fa-camera"></i> 拍照
+                        </button>
+                        <button class="btn btn-success" id="download-btn" disabled>
+                            <i class="fas fa-download"></i> 下载
+                        </button>
+                        <button class="btn btn-warning" id="clear-btn">
+                            <i class="fas fa-trash"></i> 清空
+                        </button>
+                        <button class="btn btn-danger" id="stop-camera" disabled>
+                            <i class="fas fa-stop"></i> 停止
+                        </button>
+                    </div>
+                    
+                    <h2 style="margin-top: 30px;"><i class="fas fa-filter"></i> 滤镜效果</h2>
+                    <div class="filters">
+                        <div class="filter-btn active" data-filter="none">无滤镜</div>
+                        <div class="filter-btn" data-filter="grayscale">黑白</div>
+                        <div class="filter-btn" data-filter="sepia">怀旧</div>
+                        <div class="filter-btn" data-filter="invert">反色</div>
+                        <div class="filter-btn" data-filter="blur">模糊</div>
+                        <div class="filter-btn" data-filter="hue">色调</div>
+                        <div class="filter-btn" data-filter="vintage">复古</div>
+                        <div class="filter-btn" data-filter="cool">冷色调</div>
+                    </div>
+                </div>
+                
+                <div class="gallery-section">
+                    <h2><i class="fas fa-images"></i> 照片画廊</h2>
+                    <div class="gallery-container" id="gallery">
+                        <!-- 照片将通过JavaScript动态添加 -->
+                        <div class="photo-item empty">
+                            <div style="display:flex;height:100%;align-items:center;justify-content:center;color:#718096;">
+                                <i class="fas fa-images" style="font-size:2rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 网页相机应用 | 所有照片在本地处理，不上传至任何服务器</p>
+            <p>使用现代浏览器以获得最佳体验（Chrome, Firefox, Edge等）</p>
+        </footer>
+    </div>
+    
+    <div class="fullscreen-preview" id="fullscreen-preview">
+        <img class="fullscreen-img" id="fullscreen-img" src="" alt="预览">
+        <div class="fullscreen-actions">
+            <button class="btn btn-success" id="download-full">
+                <i class="fas fa-download"></i> 下载照片
+            </button>
+            <button class="btn btn-danger" id="close-preview">
+                <i class="fas fa-times"></i> 关闭预览
+            </button>
+        </div>
+        <div class="close-preview">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const placeholder = document.getElementById('placeholder');
+            const startBtn = document.getElementById('start-camera');
+            const captureBtn = document.getElementById('capture-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const stopBtn = document.getElementById('stop-camera');
+            const clearBtn = document.getElementById('clear-btn');
+            const gallery = document.getElementById('gallery');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const fullscreenPreview = document.getElementById('fullscreen-preview');
+            const fullscreenImg = document.getElementById('fullscreen-img');
+            const downloadFullBtn = document.getElementById('download-full');
+            const closePreviewBtn = document.getElementById('close-preview');
+            const closePreviewIcon = document.querySelector('.close-preview');
+            
+            let stream = null;
+            let currentFilter = 'none';
+            let photos = [];
+            
+            // 相机启动函数
+            async function startCamera() {
+                try {
+                    placeholder.style.display = 'none';
+                    video.style.display = 'block';
+                    
+                    stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { 
+                            facingMode: 'user',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        }, 
+                        audio: false 
+                    });
+                    
+                    video.srcObject = stream;
+                    
+                    // 启用按钮
+                    captureBtn.disabled = false;
+                    stopBtn.disabled = false;
+                    startBtn.disabled = true;
+                    
+                    // 更新状态
+                    document.querySelector('.camera-status').innerHTML = '<i class="fas fa-circle"></i> 运行中';
+                    
+                } catch (err) {
+                    console.error("相机访问错误: ", err);
+                    placeholder.style.display = 'flex';
+                    video.style.display = 'none';
+                    placeholder.innerHTML = `
+                        <i class="fas fa-exclamation-triangle camera-icon" style="color:#e53e3e;"></i>
+                        <p>无法访问相机</p>
+                        <p style="font-size:0.9rem;margin-top:10px;">${err.message}</p>
+                    `;
+                }
+            }
+            
+            // 停止相机
+            function stopCamera() {
+                if (stream) {
+                    const tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                    stream = null;
+                }
+                
+                video.style.display = 'none';
+                placeholder.style.display = 'flex';
+                placeholder.innerHTML = `
+                    <i class="fas fa-camera camera-icon"></i>
+                    <p>相机已停止</p>
+                `;
+                
+                // 更新按钮状态
+                captureBtn.disabled = true;
+                downloadBtn.disabled = true;
+                stopBtn.disabled = true;
+                startBtn.disabled = false;
+                
+                // 更新状态
+                document.querySelector('.camera-status').innerHTML = '<i class="fas fa-circle"></i> 已停止';
+            }
+            
+            // 拍照功能
+            function capturePhoto() {
+                if (!stream) return;
+                
+                const width = video.videoWidth;
+                const height = video.videoHeight;
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // 应用当前滤镜
+                ctx.filter = getFilterStyle(currentFilter);
+                
+                // 绘制图像（水平翻转）
+                ctx.translate(width, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, width, height);
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                
+                // 创建数据URL
+                const dataUrl = canvas.toDataURL('image/png');
+                
+                // 添加到照片数组
+                photos.push({
+                    id: Date.now(),
+                    dataUrl: dataUrl,
+                    filter: currentFilter
+                });
+                
+                // 更新画廊
+                updateGallery();
+                
+                // 启用下载按钮
+                downloadBtn.disabled = false;
+                
+                // 显示拍照动画
+                showCaptureAnimation();
+            }
+            
+            // 显示拍照动画
+            function showCaptureAnimation() {
+                const flash = document.createElement('div');
+                flash.style.position = 'absolute';
+                flash.style.top = '0';
+                flash.style.left = '0';
+                flash.style.width = '100%';
+                flash.style.height = '100%';
+                flash.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                flash.style.zIndex = '10';
+                flash.style.opacity = '0';
+                flash.style.transition = 'opacity 0.3s';
+                video.parentElement.appendChild(flash);
+                
+                setTimeout(() => {
+                    flash.style.opacity = '1';
+                }, 10);
+                
+                setTimeout(() => {
+                    flash.style.opacity = '0';
+                }, 100);
+                
+                setTimeout(() => {
+                    flash.remove();
+                }, 400);
+            }
+            
+            // 更新照片画廊
+            function updateGallery() {
+                gallery.innerHTML = '';
+                
+                if (photos.length === 0) {
+                    gallery.innerHTML = `
+                        <div class="photo-item empty">
+                            <div style="display:flex;height:100%;align-items:center;justify-content:center;color:#718096;">
+                                <i class="fas fa-images" style="font-size:2rem;"></i>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                photos.forEach(photo => {
+                    const photoItem = document.createElement('div');
+                    photoItem.className = 'photo-item';
+                    photoItem.innerHTML = `
+                        <img src="${photo.dataUrl}" alt="照片">
+                        <div class="photo-actions">
+                            <button class="action-btn view-photo" data-id="${photo.id}">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button class="action-btn download-photo" data-id="${photo.id}">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="action-btn delete-photo" data-id="${photo.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    gallery.appendChild(photoItem);
+                });
+            }
+            
+            // 获取滤镜样式
+            function getFilterStyle(filter) {
+                switch(filter) {
+                    case 'grayscale': return 'grayscale(100%)';
+                    case 'sepia': return 'sepia(100%)';
+                    case 'invert': return 'invert(100%)';
+                    case 'blur': return 'blur(5px)';
+                    case 'hue': return 'hue-rotate(90deg)';
+                    case 'vintage': return 'contrast(1.1) sepia(0.3) saturate(1.5)';
+                    case 'cool': return 'brightness(1.1) hue-rotate(180deg) contrast(1.2)';
+                    default: return 'none';
+                }
+            }
+            
+            // 下载照片
+            function downloadPhoto() {
+                if (photos.length === 0) return;
+                
+                const link = document.createElement('a');
+                link.href = photos[photos.length - 1].dataUrl;
+                link.download = `photo-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // 清空照片
+            function clearPhotos() {
+                if (photos.length === 0) return;
+                
+                if (confirm('确定要删除所有照片吗？')) {
+                    photos = [];
+                    updateGallery();
+                    downloadBtn.disabled = true;
+                }
+            }
+            
+            // 全屏查看照片
+            function viewPhoto(id) {
+                const photo = photos.find(p => p.id == id);
+                if (!photo) return;
+                
+                fullscreenImg.src = photo.dataUrl;
+                fullscreenPreview.style.display = 'flex';
+                
+                // 设置下载按钮
+                downloadFullBtn.onclick = function() {
+                    const link = document.createElement('a');
+                    link.href = photo.dataUrl;
+                    link.download = `photo-${new Date(parseInt(id)).toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+            }
+            
+            // 事件监听器
+            startBtn.addEventListener('click', startCamera);
+            stopBtn.addEventListener('click', stopCamera);
+            captureBtn.addEventListener('click', capturePhoto);
+            downloadBtn.addEventListener('click', downloadPhoto);
+            clearBtn.addEventListener('click', clearPhotos);
+            
+            // 滤镜选择
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-filter');
+                });
+            });
+            
+            // 画廊操作（事件委托）
+            gallery.addEventListener('click', function(e) {
+                const target = e.target;
+                const btn = target.closest('.action-btn');
+                
+                if (!btn) return;
+                
+                const id = btn.getAttribute('data-id');
+                
+                if (btn.classList.contains('view-photo')) {
+                    viewPhoto(id);
+                } else if (btn.classList.contains('download-photo')) {
+                    const photo = photos.find(p => p.id == id);
+                    if (photo) {
+                        const link = document.createElement('a');
+                        link.href = photo.dataUrl;
+                        link.download = `photo-${new Date(parseInt(id)).toISOString().slice(0, 19).replace(/:/g, '-')}.png`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                } else if (btn.classList.contains('delete-photo')) {
+                    if (confirm('确定要删除这张照片吗？')) {
+                        photos = photos.filter(p => p.id != id);
+                        updateGallery();
+                        if (photos.length === 0) {
+                            downloadBtn.disabled = true;
+                        }
+                    }
+                }
+            });
+            
+            // 关闭全屏预览
+            closePreviewBtn.addEventListener('click', function() {
+                fullscreenPreview.style.display = 'none';
+            });
+            
+            closePreviewIcon.addEventListener('click', function() {
+                fullscreenPreview.style.display = 'none';
+            });
+            
+            // 初始化
+            updateGallery();
+        });
+    </script>
+</body>
+</html>
