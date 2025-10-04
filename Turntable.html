@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义转盘</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        .wheel-container {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .wheel-wrapper {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        #wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        .pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 40px;
+            background-color: #ff4757;
+            clip-path: polygon(50% 100%, 0 0, 100% 0);
+            z-index: 10;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: #ff9f43;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            background: #ffaf60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button.spin {
+            background: #2ed573;
+        }
+        button.reset {
+            background: #ff6b81;
+        }
+        button.save {
+            background: #3742fa;
+        }
+        button.load {
+            background: #5352ed;
+        }
+        .config-panel {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .config-panel h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+        .items-list {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+        }
+        .item-text {
+            flex: 1;
+        }
+        .item-probability {
+            width: 60px;
+            margin: 0 10px;
+        }
+        .remove-item {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .result {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 40px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .file-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .file-input {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .wheel-container, .config-panel {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>自定义转盘</h1>
+            <p class="subtitle">创建您自己的转盘，自定义选项和概率，保存并随时加载</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="wheel-container">
+                <div class="wheel-wrapper">
+                    <canvas id="wheel"></canvas>
+                    <div class="pointer"></div>
+                </div>
+                
+                <div class="controls">
+                    <button id="spinBtn" class="spin">开始旋转</button>
+                    <button id="resetBtn" class="reset">重置转盘</button>
+                </div>
+                
+                <div class="result" id="result">等待旋转...</div>
+                
+                <div class="file-controls">
+                    <button id="saveBtn" class="save">保存配置</button>
+                    <button id="loadBtn" class="load">加载配置</button>
+                    <input type="file" id="fileInput" class="file-input" accept=".json">
+                </div>
+            </div>
+            
+            <div class="config-panel">
+                <h2>转盘配置</h2>
+                
+                <div class="input-group">
+                    <label for="itemText">选项内容</label>
+                    <input type="text" id="itemText" placeholder="输入选项内容">
+                </div>
+                
+                <div class="input-group">
+                    <label for="itemProbability">概率 (%)</label>
+                    <input type="number" id="itemProbability" min="1" max="100" value="20" placeholder="输入概率">
+                </div>
+                
+                <button id="addItemBtn">添加选项</button>
+                
+                <div class="items-list" id="itemsList">
+                    <!-- 选项将动态添加到这里 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 转盘配置
+        let wheelConfig = {
+            items: [
+                { text: "选项1", probability: 25, color: "#FF6384" },
+                { text: "选项2", probability: 25, color: "#36A2EB" },
+                { text: "选项3", probability: 25, color: "#FFCE56" },
+                { text: "选项4", probability: 25, color: "#4BC0C0" }
+            ]
+        };
+
+        // DOM元素
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        const spinBtn = document.getElementById('spinBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const loadBtn = document.getElementById('loadBtn');
+        const fileInput = document.getElementById('fileInput');
+        const itemsList = document.getElementById('itemsList');
+        const resultDiv = document.getElementById('result');
+        const itemTextInput = document.getElementById('itemText');
+        const itemProbabilityInput = document.getElementById('itemProbability');
+
+        // 转盘状态
+        let isSpinning = false;
+        let rotation = 0;
+        let spinTimeout = null;
+
+        // 初始化
+        function init() {
+            // 设置Canvas尺寸
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 加载保存的配置
+            loadFromLocalStorage();
+            
+            // 绑定事件
+            spinBtn.addEventListener('click', spinWheel);
+            resetBtn.addEventListener('click', resetWheel);
+            addItemBtn.addEventListener('click', addItem);
+            saveBtn.addEventListener('click', saveConfig);
+            loadBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileUpload);
+            
+            // 绘制初始转盘
+            drawWheel();
+        }
+
+        // 调整Canvas大小
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const size = Math.min(container.clientWidth, container.clientHeight);
+            canvas.width = size;
+            canvas.height = size;
+            drawWheel();
+        }
+
+        // 绘制转盘
+        function drawWheel() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 10;
+            
+            // 清空Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 计算总概率
+            const totalProbability = wheelConfig.items.reduce((sum, item) => sum + item.probability, 0);
+            
+            // 绘制扇形
+            let startAngle = rotation;
+            wheelConfig.items.forEach((item, index) => {
+                const sliceAngle = (item.probability / totalProbability) * 2 * Math.PI;
+                
+                // 绘制扇形
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = item.color;
+                ctx.fill();
+                ctx.stroke();
+                
+                // 绘制文本
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(startAngle + sliceAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText(item.text, radius - 20, 5);
+                ctx.restore();
+                
+                startAngle += sliceAngle;
+            });
+            
+            // 绘制中心圆
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 15, 0, 2 * Math.PI);
+            ctx.fillStyle = '#2f3542';
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // 旋转转盘
+        function spinWheel() {
+            if (isSpinning || wheelConfig.items.length < 2) return;
+            
+            isSpinning = true;
+            resultDiv.textContent = "旋转中...";
+            
+            // 计算总概率
+            const totalProbability = wheelConfig.items.reduce((sum, item) => sum + item.probability, 0);
+            
+            // 生成随机结果（基于概率）
+            const randomValue = Math.random() * totalProbability;
+            let cumulativeProbability = 0;
+            let selectedIndex = 0;
+            
+            for (let i = 0; i < wheelConfig.items.length; i++) {
+                cumulativeProbability += wheelConfig.items[i].probability;
+                if (randomValue <= cumulativeProbability) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+            
+            // 计算目标旋转角度（使选中的选项指向指针）
+            const sliceAngle = (wheelConfig.items[selectedIndex].probability / totalProbability) * 2 * Math.PI;
+            const targetRotation = 10 * Math.PI - (selectedIndex * (2 * Math.PI / wheelConfig.items.length) + sliceAngle / 2);
+            
+            // 旋转动画
+            const spinDuration = 4000; // 4秒
+            const startTime = Date.now();
+            const startRotation = rotation;
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / spinDuration, 1);
+                
+                // 使用缓动函数使旋转更自然
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                rotation = startRotation + (targetRotation - startRotation) * easeOut;
+                
+                drawWheel();
+                
+                if (progress < 1) {
+                    spinTimeout = requestAnimationFrame(animate);
+                } else {
+                    // 旋转结束
+                    isSpinning = false;
+                    resultDiv.textContent = `结果: ${wheelConfig.items[selectedIndex].text}`;
+                }
+            }
+            
+            animate();
+        }
+
+        // 重置转盘
+        function resetWheel() {
+            if (isSpinning) {
+                cancelAnimationFrame(spinTimeout);
+                isSpinning = false;
+            }
+            rotation = 0;
+            drawWheel();
+            resultDiv.textContent = "等待旋转...";
+        }
+
+        // 添加选项
+        function addItem() {
+            const text = itemTextInput.value.trim();
+            const probability = parseInt(itemProbabilityInput.value);
+            
+            if (!text) {
+                alert('请输入选项内容');
+                return;
+            }
+            
+            if (isNaN(probability) || probability <= 0) {
+                alert('请输入有效的概率值');
+                return;
+            }
+            
+            // 生成随机颜色
+            const color = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+            
+            // 添加新选项
+            wheelConfig.items.push({
+                text,
+                probability,
+                color
+            });
+            
+            // 清空输入框
+            itemTextInput.value = '';
+            itemProbabilityInput.value = '20';
+            
+            // 更新UI
+            updateItemsList();
+            drawWheel();
+            saveToLocalStorage();
+        }
+
+        // 删除选项
+        function removeItem(index) {
+            wheelConfig.items.splice(index, 1);
+            updateItemsList();
+            drawWheel();
+            saveToLocalStorage();
+        }
+
+        // 更新选项列表
+        function updateItemsList() {
+            itemsList.innerHTML = '';
+            
+            wheelConfig.items.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'item';
+                
+                itemElement.innerHTML = `
+                    <span class="item-text">${item.text}</span>
+                    <span class="item-probability">${item.probability}%</span>
+                    <button class="remove-item" data-index="${index}">×</button>
+                `;
+                
+                itemsList.appendChild(itemElement);
+            });
+            
+            // 绑定删除事件
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    removeItem(index);
+                });
+            });
+        }
+
+        // 保存配置到本地存储
+        function saveToLocalStorage() {
+            localStorage.setItem('wheelConfig', JSON.stringify(wheelConfig));
+        }
+
+        // 从本地存储加载配置
+        function loadFromLocalStorage() {
+            const savedConfig = localStorage.getItem('wheelConfig');
+            if (savedConfig) {
+                try {
+                    wheelConfig = JSON.parse(savedConfig);
+                    updateItemsList();
+                } catch (e) {
+                    console.error('加载配置失败:', e);
+                }
+            }
+        }
+
+        // 保存配置到文件
+        function saveConfig() {
+            const dataStr = JSON.stringify(wheelConfig, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'wheel-config.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // 处理文件上传
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const config = JSON.parse(event.target.result);
+                    wheelConfig = config;
+                    updateItemsList();
+                    drawWheel();
+                    saveToLocalStorage();
+                    resultDiv.textContent = "配置加载成功!";
+                    
+                    // 重置文件输入，允许再次选择同一文件
+                    fileInput.value = '';
+                } catch (error) {
+                    alert('文件格式错误，请选择有效的配置文件');
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>
